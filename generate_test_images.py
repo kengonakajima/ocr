@@ -9,8 +9,8 @@ IMAGE_WIDTH = 640
 IMAGE_HEIGHT = 480
 FONT_SIZE = 16
 FONT_PATH = 'font/font/OCR-B.ttf'
-OUTPUT_DIR = 'output'
-NUM_IMAGES = 5000
+OUTPUT_DIR = 'output_test'
+NUM_IMAGES = 10  # テスト用に少量
 
 def get_text_bbox(draw, text, font, x, y):
     bbox = draw.textbbox((x, y), text, font=font)
@@ -27,7 +27,7 @@ def generate_image(image_index):
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
     
-    num_chars = random.randint(1, 50)
+    num_chars = random.randint(1, 10)  # テスト用に少なめ
     bounding_boxes = []
     
     occupied_regions = []
@@ -68,18 +68,21 @@ def generate_image(image_index):
     img.save(os.path.join(OUTPUT_DIR, image_filename))
     
     with open(os.path.join(OUTPUT_DIR, json_filename), 'w') as f:
-        json.dump(bounding_boxes, f)
+        json.dump(bounding_boxes, f, indent=2)
 
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    print(f"Generating {NUM_IMAGES} images...")
+    print(f"Generating {NUM_IMAGES} test images...")
     for i in range(1, NUM_IMAGES + 1):
-        if i % 100 == 0:
-            print(f"Progress: {i}/{NUM_IMAGES}")
         generate_image(i)
+        print(f"Generated image {i}")
     
-    print("Generation complete!")
+    # 最初のJSONファイルの内容を確認
+    with open(os.path.join(OUTPUT_DIR, 'bb_00001.json'), 'r') as f:
+        data = json.load(f)
+        print("\n最初のJSONファイルの内容:")
+        print(json.dumps(data[:3], indent=2))  # 最初の3つだけ表示
 
 if __name__ == "__main__":
     main()

@@ -47,15 +47,21 @@ class OCRDataset(Dataset):
         with open(json_path, 'r') as f:
             bboxes = json.load(f)
         
-        # バウンディングボックスをテンソルに変換
-        # 各bbox: {x, y, w, h} -> [x, y, x+w, y+h]形式に変換
+        # バウンディングボックスと文字情報を分離
         bbox_list = []
+        char_list = []
         for bbox in bboxes:
             x1 = bbox['x']
             y1 = bbox['y']
             x2 = x1 + bbox['w']
             y2 = y1 + bbox['h']
             bbox_list.append([x1, y1, x2, y2])
+            
+            # 文字情報がある場合は追加（後方互換性のため）
+            if 'char' in bbox:
+                char_list.append(bbox['char'])
+            else:
+                char_list.append(None)  # 古いデータの場合
         
         if bbox_list:
             bbox_tensor = torch.tensor(bbox_list, dtype=torch.float32)
@@ -66,6 +72,7 @@ class OCRDataset(Dataset):
         return {
             'image': image_tensor,
             'bboxes': bbox_tensor,
+            'chars': char_list,  # 文字情報を追加
             'num_chars': len(bboxes),
             'image_path': img_path
         }
@@ -118,6 +125,9 @@ def custom_collate_fn(batch):
     # bboxesはリストのまま（各画像で数が異なるため）
     bboxes = [item['bboxes'] for item in batch]
     
+    # 文字情報もリストのまま
+    chars = [item['chars'] for item in batch]
+    
     # その他の情報
     num_chars = [item['num_chars'] for item in batch]
     image_paths = [item['image_path'] for item in batch]
@@ -125,6 +135,7 @@ def custom_collate_fn(batch):
     return {
         'images': images,
         'bboxes': bboxes,
+        'chars': chars,  # 文字情報を追加
         'num_chars': num_chars,
         'image_paths': image_paths
     }

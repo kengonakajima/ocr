@@ -28,11 +28,11 @@ class OCRLoss(nn.Module):
         for i, char in enumerate(string.digits):
             self.char_to_class[char] = i + 52
             
-    def forward(self, predictions, targets, image_paths):
+    def forward(self, predictions, targets_bbox, targets_chars):
         """
         predictions: モデルの出力
-        targets: バウンディングボックスのリスト
-        image_paths: 画像ファイルパス（文字情報を取得するため）
+        targets_bbox: バウンディングボックスのリスト
+        targets_chars: 文字のリスト
         """
         objectness_pred = predictions['objectness']
         bbox_pred = predictions['bbox']
@@ -53,15 +53,11 @@ class OCRLoss(nn.Module):
         
         # 各画像について処理
         for b in range(batch_size):
-            if len(targets[b]) == 0:
+            if len(targets_bbox[b]) == 0:
                 continue
             
-            # 画像パスから文字情報を推測（ランダム生成なので実際の文字は不明）
-            # 今回はダミーでランダムな文字を割り当て
-            num_chars = len(targets[b])
-            
             # 各GTボックスについて
-            for idx, gt_box in enumerate(targets[b]):
+            for idx, gt_box in enumerate(targets_bbox[b]):
                 # GT box: [x1, y1, x2, y2]
                 x1, y1, x2, y2 = gt_box
                 cx = (x1 + x2) / 2
@@ -82,10 +78,17 @@ class OCRLoss(nn.Module):
                     bbox_target[b, 2, fy, fx] = w
                     bbox_target[b, 3, fy, fx] = h
                     
-                    # 認識ターゲット（ダミー：ランダムなクラス）
-                    # 実際の実装では、画像生成時の文字情報を使う必要がある
-                    dummy_class = torch.randint(0, 62, (1,)).item()
-                    class_target[b, fy, fx] = dummy_class
+                    # 認識ターゲット（実際の文字を使用）
+                    if targets_chars[b][idx] is not None:
+                        char = targets_chars[b][idx]
+                        if char in self.char_to_class:
+                            class_target[b, fy, fx] = self.char_to_class[char]
+                        else:
+                            # 未知の文字の場合はスキップ
+                            continue
+                    else:
+                        # 文字情報がない場合（古いデータ）はランダム
+                        class_target[b, fy, fx] = torch.randint(0, 62, (1,)).item()
                     
                     num_positive += 1
         
@@ -167,7 +170,7 @@ def test_full_loss():
     outputs = model(images)
     
     # 損失計算
-    losses = loss_fn(outputs, bboxes, image_paths)
+    losses = loss_fn(outputs, bboxes, batch['chars'])
     
     print("\n--- 損失値 ---")
     print(f"合計損失: {losses['total_loss']:.4f}")

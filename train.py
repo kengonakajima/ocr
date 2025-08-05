@@ -87,12 +87,12 @@ class Trainer:
             # データ準備
             images = batch['images'].to(self.device)
             bboxes = batch['bboxes']
-            image_paths = batch['image_paths']
+            chars = batch['chars']
             
             # 学習ステップ
             self.optimizer.zero_grad()
             outputs = self.model(images)
-            losses = self.criterion(outputs, bboxes, image_paths)
+            losses = self.criterion(outputs, bboxes, chars)
             total_loss = losses['total_loss']
             
             total_loss.backward()
@@ -125,10 +125,10 @@ class Trainer:
             for batch in self.val_loader:
                 images = batch['images'].to(self.device)
                 bboxes = batch['bboxes']
-                image_paths = batch['image_paths']
+                chars = batch['chars']
                 
                 outputs = self.model(images)
-                losses = self.criterion(outputs, bboxes, image_paths)
+                losses = self.criterion(outputs, bboxes, chars)
                 val_losses.append(losses['total_loss'].item())
         
         return sum(val_losses) / len(val_losses)

@@ -1,0 +1,5 @@
+output
+.claude
+__pycache__
+training_results.json
+checkpoints

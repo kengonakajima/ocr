@@ -1,0 +1,64 @@
+{
+  "original_detections": 131,
+  "after_confidence_filter": 26,
+  "after_grouping": 9,
+  "final_detections": 9,
+  "suppressed_count": 17,
+  "reduction_rate": 93.12977099236642,
+  "detections": [
+    {
+      "x": 144,
+      "y": 19,
+      "char": "J",
+      "confidence": 0.55539470911026
+    },
+    {
+      "x": 155,
+      "y": 26,
+      "char": "L",
+      "confidence": 0.5866491794586182
+    },
+    {
+      "x": 184,
+      "y": 59,
+      "char": "L",
+      "confidence": 0.8687330484390259
+    },
+    {
+      "x": 236,
+      "y": 59,
+      "char": "5",
+      "confidence": 0.530011773109436
+    },
+    {
+      "x": 87,
+      "y": 69,
+      "char": "L",
+      "confidence": 0.5138741731643677
+    },
+    {
+      "x": 119,
+      "y": 126,
+      "char": "L",
+      "confidence": 0.8897000551223755
+    },
+    {
+      "x": 106,
+      "y": 123,
+      "char": "J",
+      "confidence": 0.5056402087211609
+    },
+    {
+      "x": 195,
+      "y": 239,
+      "char": "L",
+      "confidence": 0.5830940008163452
+    },
+    {
+      "x": 189,
+      "y": 240,
+      "char": "J",
+      "confidence": 0.5256103873252869
+    }
+  ]
+}

@@ -17,8 +17,8 @@ for i in range(8):
     axes[i].axis('off')
 
 plt.colorbar(im, ax=axes)
-plt.suptitle('Conv1層のフィルタ（最初の8個）')
+plt.suptitle('Conv1 Layer Filters (First 8)')
 plt.tight_layout()
 plt.savefig('conv1_filters.png')
 plt.show()
-print("フィルタの可視化を 'conv1_filters.png' に保存しました")
+print("Filter visualization saved to 'conv1_filters.png'")

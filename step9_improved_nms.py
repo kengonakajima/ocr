@@ -63,7 +63,10 @@ class ImprovedNMS:
         
         print(f"\nステップ1: 確信度フィルタリング")
         print(f"  しきい値: {threshold}")
-        print(f"  残った検出数: {len(filtered)} ({len(filtered)/len(detections)*100:.1f}%)")
+        if len(detections) > 0:
+            print(f"  残った検出数: {len(filtered)} ({len(filtered)/len(detections)*100:.1f}%)")
+        else:
+            print(f"  残った検出数: 0 (入力検出なし)")
         
         # 確信度分布を分析
         if filtered:

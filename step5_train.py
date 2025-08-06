@@ -113,7 +113,7 @@ def plot_training_history(history):
     
     plt.tight_layout()
     plt.savefig('step5_training_history.png', dpi=150, bbox_inches='tight')
-    plt.show()
+    plt.close()  # showの代わりにclose
     print("学習曲線を 'step5_training_history.png' に保存しました")
 
 
